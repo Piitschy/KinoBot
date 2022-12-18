@@ -14,7 +14,10 @@ TG_GROUP = int(os.environ['TG_GROUP']) or None
 
 class Bot():
   def __init__(self):
-    self.driver = webdriver.Chrome(options=self.set_chrome_options())
+    try:
+      self.driver = webdriver.Chrome(options=self.set_chrome_options())
+    except:
+      print("Chrome not found...")
     self.vars = {}
   
   def set_chrome_options(self) -> None:
@@ -60,18 +63,20 @@ class Bot():
         i += 1
     return dates
 
-last_date:str = ""
-tg = telegram.Bot(TG_TOKEN)
 
-tg.send_message(text='Bot läuft', chat_id=TG_GROUP)
+if __name__ == "__main__":
+  last_date:str = ""
+  tg = telegram.Bot(TG_TOKEN)
 
-while True:
-  bot = Bot()
-  termine:list[str] = bot.get_dates()
-  date = termine[-1]
-  print(date)
-  bot.quit()
-  if last_date != date:
-      tg.send_message(text="Neue Termine für Avatar 2:\n"+'\n'.join(termine), chat_id=TG_GROUP)
-      last_date = date
-  sleep(45*60)
+  tg.send_message(text='Bot läuft', chat_id=TG_GROUP)
+
+  while True:
+    bot = Bot()
+    termine:list[str] = bot.get_dates()
+    date = termine[-1]
+    print(date)
+    bot.quit()
+    if last_date != date:
+        tg.send_message(text="Neue Termine für Avatar 2:\n"+'\n'.join(termine), chat_id=TG_GROUP)
+        last_date = date
+    sleep(45*60)
